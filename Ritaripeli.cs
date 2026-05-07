@@ -3,6 +3,7 @@
     internal class Ritaripeli
     {
         Ritari pelaaja;
+
         List<Hirviö> hirviot;
         List<IKauppa> kaupat;
         public Ritaripeli()
@@ -63,18 +64,50 @@
             Hirviö vastustaja = null;
             while (vastustaja.Osumapisteet > 0 && pelaaja.Osumapisteet > 0)
             {
+                Print.LineColor("Valitse toiminto: ", ConsoleColor.White);
+                Print.LineColor("1. Hyökkää viholliseen", ConsoleColor.White);
+                Print.LineColor("2. Käytä esinettä Repusta", ConsoleColor.White);
+                Print.LineColor("3. Pakene taistelusta", ConsoleColor.White);
+
                 // TODO anna pelaajan valita toiminto:
-                // 1. hyökkää : aiheuta vahinkoa hirviölle
+                string valinta = Console.ReadLine();
+                if (valinta == "1")
+                {
+                    // 1. hyökkää : aiheuta vahinkoa hirviölle
+                    int pelaajanVahinko = 1;
+                    vastustaja.OtaVahinkoa(pelaajanVahinko);
+                    Print.LineColor($"Hyökkäsit {vastustaja.Nimi} ja aiheutit {pelaajanVahinko} vahinkoa!", ConsoleColor.Green);
+                }
+                else if (valinta == "2")
+                {
                 // 2. käytä esinettä ; näytä Repun sisältö ja anna pelaajan valita tavara
                 // Jos pelaaja käyttää ruoka-annosta, lisää pelaajan osumapisteitä
                 // Jos pelaaja käyttää nuolta, ammu nuoli kohti vihollista
                 // Jos pelaaja käyttää jotain muuta tavaraa, toimi valinnan mukaan
+                }
+                else if (valinta == "3")
+                {
                 // 3. pakene : poistu TaisteluTilasta
+                    Print.LineColor("Pakenit taistelusta!", ConsoleColor.Yellow);
+                    return;
+                }
+
 
                 // TODO Jos hirviöllä on osumapisteitä jäljellä
+
                 // arvo hirviön tekemä vahinko ja vähennä se pelaajan osumapisteistä
             }
             // Kun taistelu loppuu, palaa PeliSilmukkaan
+            if (pelaaja.Osumapisteet <= 0)
+            {
+                Print.LineColor("Hävisit taistelun! Peli päättyy.", ConsoleColor.Red);
+                Environment.Exit(0);
+            }
+            else if (vastustaja.Osumapisteet <= 0)
+            {
+                Print.LineColor("Voitit taistelun!", ConsoleColor.Green);
+                // TODO palkitse pelaaja voitosta, esimerkiksi lisää rahaa tai anna esineitä
+            }
         }
 
         public void KauppaTila()
@@ -86,6 +119,8 @@
         }
         public void NuoliKauppaTila()
         {
+            NuoliaKaupan nuoliKauppa = new NuoliaKaupan();
+            nuoliKauppa.NuoliKauppa();
             // TODO listaa nuolikaupan nuolivaihtoehdot ja anna pelaajan valita minkä hän haluaa ostaa
             // tarkista onko pelaajalla tarpeeksi rahaa ja jos on, vähennä hinta pelaajan rahapussista ja lisää nuoli pelaajan reppuun
         }

@@ -77,8 +77,7 @@ namespace ritaripeli
                 return new Nuoli(kärki.teräs, perä.kanansulka, 85);
             }
         }
-        /*
-        static void Main(string[] args)
+        public void NuoliKauppa() 
         {
             Console.WriteLine("Tervetuloa nuolikauppaan!");
             Console.WriteLine("Haluatko:");
@@ -129,7 +128,6 @@ namespace ritaripeli
                 Console.WriteLine("Virheellinen valinta.");
             }
         }
-        */
 
         static kärki KärkiString(string kärkiValinta)
         {
