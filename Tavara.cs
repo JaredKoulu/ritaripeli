@@ -63,5 +63,29 @@
             return "Miekka";
         }
     }
+    public class Leipä : Tavara
+    {
+        public Leipä() : base(0.5, 0.3) { }
+        public override string ToString()
+        {
+            return "Leipä";
+        }
+    }
+    public class Juusto : Tavara
+    {
+        public Juusto() : base(0.3, 1) { }
+        public override string ToString()
+        {
+            return "Juusto";
+        }
+    }
+    public class Liha : Tavara
+    {
+        public Liha() : base(1, 3) { }
+        public override string ToString()
+        {
+            return "Liha";
+        }
+    }
 
 }

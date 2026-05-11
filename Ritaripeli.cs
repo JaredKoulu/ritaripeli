@@ -6,11 +6,18 @@
 
         List<Hirviö> hirviot;
         List<IKauppa> kaupat;
+        Reppu reppu = new(10, 30, 20);
         public Ritaripeli()
         {
-            pelaaja = new Ritari(aloitusOsumapisteet: 10, aloitusRahat: 10);
+            pelaaja = new Ritari(aloitusOsumapisteet: 10, aloitusRahat: 10, maxMaara: 10, maxPaino: 30, maxTilavuus: 20);
             hirviot = new List<Hirviö>();
             // TODO luo erilaiset hirviöt
+            hirviot = new List<Hirviö>
+            {
+                new Örkki(),
+                new Lohikäärme(),
+                new Mörkö()
+            };
             kaupat = new List<IKauppa>();
             // TODO luo erilaiset kaupat
         }
@@ -51,6 +58,7 @@
                 if (valinta == "4")
                 {
                     // TODO näytä Repun sisältö ja anna pelaajan valita tavara
+                    ReppuTila();
                 }
 
                 // Tarkista onko peli päättynyt
@@ -60,9 +68,13 @@
 
         public void TaisteluTila()
         {
-            // TODO arvo pelaajaa vastaan taisteleva hirviö
-            Hirviö vastustaja = null;
-            while (vastustaja.Osumapisteet > 0 && pelaaja.Osumapisteet > 0)
+            Random random = new Random();
+            Hirviö? vastustaja = hirviot[random.Next(hirviot.Count)];
+            Ritari? pelaaja = this.pelaaja;
+            
+            Print.LineColor($"Kohtasit {vastustaja.Nimi}:n!", ConsoleColor.Yellow);
+
+            while (vastustaja?.Osumapisteet > 0 && pelaaja?.Osumapisteet > 0)
             {
                 Print.LineColor("Valitse toiminto: ", ConsoleColor.White);
                 Print.LineColor("1. Hyökkää viholliseen", ConsoleColor.White);
@@ -70,40 +82,43 @@
                 Print.LineColor("3. Pakene taistelusta", ConsoleColor.White);
 
                 // TODO anna pelaajan valita toiminto:
-                string valinta = Console.ReadLine();
+                string? valinta = Console.ReadLine();
                 if (valinta == "1")
                 {
                     // 1. hyökkää : aiheuta vahinkoa hirviölle
                     int pelaajanVahinko = 1;
-                    vastustaja.OtaVahinkoa(pelaajanVahinko);
-                    Print.LineColor($"Hyökkäsit {vastustaja.Nimi} ja aiheutit {pelaajanVahinko} vahinkoa!", ConsoleColor.Green);
+                    vastustaja?.OtaVahinkoa(pelaajanVahinko);
+                    Print.LineColor($"Hyökkäsit {vastustaja?.Nimi} ja aiheutit {pelaajanVahinko} vahinkoa!", ConsoleColor.Green);
                 }
                 else if (valinta == "2")
                 {
-                // 2. käytä esinettä ; näytä Repun sisältö ja anna pelaajan valita tavara
-                // Jos pelaaja käyttää ruoka-annosta, lisää pelaajan osumapisteitä
-                // Jos pelaaja käyttää nuolta, ammu nuoli kohti vihollista
-                // Jos pelaaja käyttää jotain muuta tavaraa, toimi valinnan mukaan
+                    ReppuTila();
                 }
                 else if (valinta == "3")
                 {
-                // 3. pakene : poistu TaisteluTilasta
+                    // 3. pakene : poistu TaisteluTilasta
                     Print.LineColor("Pakenit taistelusta!", ConsoleColor.Yellow);
                     return;
                 }
 
-
                 // TODO Jos hirviöllä on osumapisteitä jäljellä
 
                 // arvo hirviön tekemä vahinko ja vähennä se pelaajan osumapisteistä
+                if (vastustaja?.Osumapisteet > 0)
+                {
+                    int hirviönVahinko = vastustaja.AnnaVahinko();
+                    pelaaja?.OtaVahinkoa(hirviönVahinko);
+                    Print.LineColor($"{vastustaja?.Nimi} hyökkäsi sinua ja aiheutti {hirviönVahinko} vahinkoa!", ConsoleColor.Red);
+                }
             }
+            
             // Kun taistelu loppuu, palaa PeliSilmukkaan
-            if (pelaaja.Osumapisteet <= 0)
+            if (pelaaja?.Osumapisteet <= 0)
             {
                 Print.LineColor("Hävisit taistelun! Peli päättyy.", ConsoleColor.Red);
                 Environment.Exit(0);
             }
-            else if (vastustaja.Osumapisteet <= 0)
+            else if (vastustaja?.Osumapisteet <= 0)
             {
                 Print.LineColor("Voitit taistelun!", ConsoleColor.Green);
                 // TODO palkitse pelaaja voitosta, esimerkiksi lisää rahaa tai anna esineitä
@@ -112,10 +127,93 @@
 
         public void KauppaTila()
         {
-            // TODO anna pelaajan valita mihin kauppaan pelaaja menee
-            // listaa kaupan tavarat ja anna pelaajan valita minkä hän haluaa
-            // yrittää ostaa
-            // lisää vaihtoehto jolla pelaaja pääsee pois kaupasta ja Kauppatilasta
+
+            Print.LineColor("Tervetuloa ruokakauppaan!", ConsoleColor.White);
+            Print.LineColor("Haluatko ostaa 1. ruokaa vai 2. lähteä? ", ConsoleColor.White);
+            string valinta = Console.ReadLine();
+            if (valinta == "1")
+            {
+                Print.LineColor("Valitse ruokavaihtoehto: ", ConsoleColor.White);
+                // TODO listaa kaupan ruokavaihtoehdot ja anna pelaajan valita minkä hän haluaa ostaa
+                Print.LineColor("Valitse ruokavaihtoehto: ", ConsoleColor.White);
+                Print.LineColor("1. Leipä (5 kr)", ConsoleColor.White);
+                Print.LineColor("2. Juusto (7 kr)", ConsoleColor.White);
+                Print.LineColor("3. Liha (10 kr)", ConsoleColor.White);
+                Print.LineColor("4. Lähde kaupasta", ConsoleColor.White);
+                string Ruokavalinta = Console.ReadLine();
+                if (Ruokavalinta == "1")
+                {
+                    if (pelaaja.Rahapussi.Rahoja >= 5)
+                    {
+                        pelaaja.Rahapussi.OtaRahaa(5);
+                        Leipä leipä = new Leipä();
+                        if (reppu.Lisää(leipä))
+                        {
+
+                        Print.LineColor("Ostit leipää ja lisäsit sen reppuusi!", ConsoleColor.Green);
+                        }
+                        else
+                        {
+                            Print.LineColor("Ruokaa ei voitu lisätä reppuun tilanvuoksi.", ConsoleColor.Red);
+                        }
+                    }
+                    else
+                    {
+                        Print.LineColor("Sinulla ei ole tarpeeksi rahaa ostaaksesi leipää!", ConsoleColor.Red);
+                    }
+                }
+                if (Ruokavalinta == "2")
+                {
+                    if (pelaaja.Rahapussi.Rahoja >= 7)
+                    {
+                        pelaaja.Rahapussi.OtaRahaa(7);
+                        Juusto juusto = new Juusto();
+                        if (reppu.Lisää(juusto))
+                        {
+                            Print.LineColor("Ostit juustoa ja lisäsit sen reppuusi!", ConsoleColor.Green);
+                        }
+                        else
+                        {
+                            Print.LineColor("Ruokaa ei voitu lisätä reppuun tilanvuoksi.", ConsoleColor.Red);
+                        }
+                    }
+                    else
+                    {
+                        Print.LineColor("Sinulla ei ole tarpeeksi rahaa ostaaksesi juustoa!", ConsoleColor.Red);
+                    }
+                }
+                if (Ruokavalinta == "3")
+                {
+                    if (pelaaja.Rahapussi.Rahoja >= 10)
+                    {
+                        pelaaja.Rahapussi.OtaRahaa(10);
+                        Liha liha = new Liha();
+                        if (reppu.Lisää(liha))
+                        {
+                        Print.LineColor("Ostit lihaa ja lisäsit sen reppuusi!", ConsoleColor.Green);
+  
+                        }
+                        else
+                        {
+                            Print.LineColor("Ruokaa ei voitu lisätä reppuun tilanvuoksi.", ConsoleColor.Red);
+                        }
+                    }
+                    else
+                    {
+                        Print.LineColor("Sinulla ei ole tarpeeksi rahaa ostaaksesi lihaa!", ConsoleColor.Red);
+                    }
+                }
+                if (Ruokavalinta == "4")
+                {
+                    Print.LineColor("Lähdit kaupasta!", ConsoleColor.Yellow);
+                    return;
+                }
+            }
+            if (valinta == "2")
+            {
+                Print.LineColor("Lähdit kaupasta!", ConsoleColor.Yellow);
+                return;
+            }
         }
         public void NuoliKauppaTila()
         {
@@ -123,6 +221,46 @@
             nuoliKauppa.NuoliKauppa();
             // TODO listaa nuolikaupan nuolivaihtoehdot ja anna pelaajan valita minkä hän haluaa ostaa
             // tarkista onko pelaajalla tarpeeksi rahaa ja jos on, vähennä hinta pelaajan rahapussista ja lisää nuoli pelaajan reppuun
+        }
+        public void ReppuTila()
+        {
+            // TODO näytä Repun sisältö ja anna pelaajan valita tavara
+            Print.LineColor($"Repussasi on tällähetkellä: {reppu.TavaraMaara}/{reppu.maxMaara} tavaraa, {reppu.NykyPaino}/{reppu.maxPaino} painoa ja {reppu.NykyTilavuus}/{reppu.maxTilavuus} tilavuus.", ConsoleColor.White);
+            Print.LineColor("Repun sisältö: " + reppu, ConsoleColor.Yellow);
+            Print.LineColor("Valitse tavara, jonka haluat käyttää vai haluatko lähteä?: ", ConsoleColor.White);
+            if (reppu.TavaraMaara > 0)
+            {
+                string valinta = Console.ReadLine();
+                // TODO tarkista valinta ja toimi sen mukaan
+                if (valinta == "leipä" || valinta == "juusto" || valinta == "liha")
+                {
+                    // jos pelaaja valitsee ruokaa, lisää pelaajan osumapisteitä
+                    int osumapisteidenLisays = 0;
+                    if (valinta == "leipä")
+                    {
+                        osumapisteidenLisays = 5;
+                    }
+                    else if (valinta == "juusto")
+                    {
+                        osumapisteidenLisays = 7;
+                    }
+                    else if (valinta == "liha")
+                    {
+                        osumapisteidenLisays = 10;
+                    }
+                }
+                // jos pelaaja valitsee nuolen, ammu nuoli kohti vihollista
+            if (valinta == "nuoli")
+                {
+                    // TODO ammu nuoli kohti vihollista, aiheuta vahinkoa viholliselle ja poista nuoli reppusta
+                }
+                // jos pelaaja valitsee jotain muuta tavaraa, toimi valinnan mukaan
+
+            if (valinta == "lähde")
+                {
+                    return;
+                }
+            }
         }
     }
 }

@@ -34,6 +34,5 @@ namespace ritaripeli
 		{
 			Rahoja += määrä;
 		}
-
-	}
+    }
 }
